@@ -83,13 +83,17 @@ struct move *moves = (struct move*)malloc(capacity*sizeof(struct move));//dynami
 
 //function for adding a move to the structure
 void add_move(int row, int col, int i){
-        //move addition
-        moves[count].x1= row;
-        moves[count].y1= col;
-        moves[count].x2= row-i;
-        moves[count].y2= col;
-        //increment/decrement
-        count++;
+    if (count == capacity){
+                capacity*=2;
+                moves= (struct move*)realloc(moves, capacity*sizeof(struct move));//reallocation
+    }
+    //move addition
+    moves[count].x1= row;
+    moves[count].y1= col;
+    moves[count].x2= row-i;
+    moves[count].y2= col;
+    //increment/decrement
+    count++;
 }
 
 //function to store all the possible moves for a rook moving upwards
@@ -97,32 +101,16 @@ void valid_rook_moves_going_upward( int row, int col){
     int x,i=1;
     while (row-i>=0){
         x=board[row][col]*board[row-i][col];
-        if (x==0){    //empty square
-            if (count == capacity){
-                capacity*=2;
-                moves= (struct move*)realloc(moves, capacity*sizeof(struct move));//reallocation
+        if (board[row-i][col]==0){    //empty square
                 add_move(row, col,i);
                 i++;
-            }
-            else{
-                add_move(row, col,i);
-                i++;
-            }
         }
         else if(x>0){
             break;  //friendly piece
         }
         else{       //enemy piece, capturable
-            if (count == capacity){
-                capacity*=2;
-                moves= (struct move*)realloc(moves, capacity*sizeof(struct move));//reallocation
                 add_move( row, col, i);
                 break;
-            }
-            else{
-                add_move( row, col,i);
-                break;
-            }
         }
     }
 }
