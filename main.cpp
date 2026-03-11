@@ -11,6 +11,8 @@ int board[8][8]={
     {1,1,1,1,1,1,1,1},
     {6,5,4,3,2,4,5,6},
 };
+
+
 //function to convert piece representation to character for printing
 void pieceToChar(int x){
     switch (x){
@@ -58,6 +60,8 @@ void pieceToChar(int x){
         break;
     }
 }
+
+
 //function to print the board
 void board_print(){
     int i,j;
@@ -68,10 +72,61 @@ void board_print(){
     cout << "\n";
     }
 }
+
 //structure to represent a move, with starting and ending coordinates
 struct move{
     int x1,y1,x2,y2;
 };
+
+int count=0, capacity=5;//global variables for adding elements to move structure
+struct move *moves = (struct move*)malloc(capacity*sizeof(struct move));//dynamically allocated memory for move structure
+
+//function for adding a move to the structure
+void add_move(int row, int col, int i){
+        //move addition
+        moves[count].x1= row;
+        moves[count].y1= col;
+        moves[count].x2= row-i;
+        moves[count].y2= col;
+        //increment/decrement
+        count++;
+}
+
+//function to store all the possible moves for a rook moving upwards
+void valid_rook_moves_going_upward( int row, int col){
+    int x,i=1;
+    while (row-i>=0){
+        x=board[row][col]*board[row-i][col];
+        if (x==0){    //empty square
+            if (count == capacity){
+                capacity*=2;
+                moves= (struct move*)realloc(moves, capacity*sizeof(struct move));//reallocation
+                add_move(row, col,i);
+                i++;
+            }
+            else{
+                add_move(row, col,i);
+                i++;
+            }
+        }
+        else if(x>0){
+            break;  //friendly piece
+        }
+        else{       //enemy piece, capturable
+            if (count == capacity){
+                capacity*=2;
+                moves= (struct move*)realloc(moves, capacity*sizeof(struct move));//reallocation
+                add_move( row, col, i);
+                break;
+            }
+            else{
+                add_move( row, col,i);
+                break;
+            }
+        }
+    }
+}
+
 //main function to test the board printing
 int main()
 {
